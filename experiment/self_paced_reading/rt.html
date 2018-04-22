@@ -42,7 +42,7 @@
   <div class="slide" id="i0" >
     <img src="../_shared/images/cocologo.png" alt="Stanford CoCoLab" id="cocologo"></img>
     <p id="cocolab">Stanford linguistics</p>
-    <p id="instruct-text">Thank you for participating in our study. In this study, you will read several paragraphs and answer questions about them. The HIT should take 40~50 minutes. Your patience is highly appreciated. Thanks!
+    <p id="instruct-text">Thank you for participating in our study. In this study, you will read several paragraphs and sometimes answer questions about them. The HIT should take 40~50 minutes. Your patience is highly appreciated. Thanks!
     </p>
     <button id="start_button" type="button">Start Experiment</button>
   </div>
@@ -84,24 +84,17 @@
   </div>
 
   <div class="slide" id="practicetrial">
-    <p id="practice1">This is how it works: You'll see an image like the one below. Take as much time as you need to look at it. After a few seconds, a message will tell you to press the space bar to see a description of the image. Someone who saw the image came up with this description. You'll read the description one word at a time. Press the space bar after each word to advance to see the next word in the sentence. Go ahead and try it out now. <br><span style="color:red;">Press the space bar to advance to the next word!</span>
+    <p id="Introduction">This is how it works: read through the vignette simply by pressing the space bar. Sometimes there will be a comprehension question after the vignette that checks whether you understood the vignette or not. You can feel free to take breaks between vignettes, but please do NOT take a break when you are reading through one vignette. Please do your best to read the sentences at a natural reading speed.
     </p>
 
-    <p>
-      <span id="p1" class="sprword">John</span>
-      <span id="p2" class="sprword">says:</span>
-      <span id="p3" class="sprword">The</span>
-      <span id="p4" class="sprword">house</span>
-      <span id="p5" class="sprword">has</span>
-      <span id="p6" class="sprword">a</span>
-      <span id="p7" class="sprword">chimney.</span>
-    </p>
-
-    <p id="practice2">Great! After you get through the sentence, you'll be asked to rate whether the sentence you read truthfully describes the picture.
-    <br>
-    Ready?
-    </p>
-
+    <div id="praSentence">
+      {{}}
+    </div>
+    <div id="praTrueFalse">
+      <p id="praCompreQuestion">{{}}</p>
+        <label><input id="praAnswer1" type="radio"  name="tf" value="No"/>{{}}</label>
+        <label><input id="praAnswer2" type="radio"  name="tf" value="Yes"/>{{}}</label>
+    </div>
     <button id="contbutton" onclick="_s.button()">Continue</button>
 </div>
 
@@ -112,9 +105,9 @@
       {{}}
     </div>
 
-    <div id="truefalse">
+    <div id="trueFalse">
       <!-- need help on defining the button and shuffling the answer-->
-      <p id="comprehensionQuestion">{{}}</p>
+      <p id="compreQuestion">{{}}</p>
         <label><input id="answer1" type="radio"  name="tf" value="No"/>{{}}</label>
         <label><input id="answer2" type="radio"  name="tf" value="Yes"/>{{}}</label>
     </div>
