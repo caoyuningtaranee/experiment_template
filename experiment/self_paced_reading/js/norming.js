@@ -11,7 +11,7 @@ function startsWith(str, substrings) {
          return 1;
        }
     }
-    return -1;     
+    return -1;
 }
 
 function advanceWord(word_id) {
@@ -24,10 +24,7 @@ function advanceWord(word_id) {
 }
 
 function make_slides(f) {
-  preload(
-    ["images/aquarium_000.jpeg","images/aquarium_001.jpeg","images/aquarium_010.jpeg","images/aquarium_011.jpeg","images/aquarium_100.jpeg","images/aquarium_101.jpeg","images/aquarium_110.jpeg","images/aquarium_111.jpeg","images/bottle_000.jpeg","images/bottle_001.jpeg","images/bottle_010.jpeg","images/bottle_011.jpeg","images/bottle_100.jpeg","images/bottle_101.jpeg","images/bottle_110.jpeg","images/bottle_111.jpeg","images/chimney.gif","images/garage_000.jpeg","images/garage_001.jpeg","images/garage_010.jpeg","images/garage_011.jpeg","images/garage_100.jpeg","images/garage_101.jpeg","images/garage_110.jpeg","images/garage_111.jpeg","images/house_000.jpeg","images/house_001.jpeg","images/house_010.jpeg","images/house_011.jpeg","images/house_100.jpeg","images/house_101.jpeg","images/house_110.jpeg","images/house_111.jpeg","images/jar_000.jpeg","images/jar_001.jpeg","images/jar_010.jpeg","images/jar_011.jpeg","images/jar_100.jpeg","images/jar_101.jpeg","images/jar_110.jpeg","images/jar_111.jpeg","images/practiceimage.jpg"], 
-    {after: function() {console.log("all images loaded")}}
-  );  
+  
   var   slides = {};
 
   slides.i0 = slide({
@@ -90,7 +87,7 @@ function make_slides(f) {
     button : function() {
       console.log("got here");
       exp.go();
-    }    
+    }
     });
 
   slides.sprtrial = slide({
@@ -112,18 +109,8 @@ function make_slides(f) {
       this.stim = stim;
       var contextsentence = stim.contextsentence + " Press the space bar to see how "+stim.name+" described these "+stim.noun+".";
       $("#contextsentence").html(contextsentence);
-	  console.log(stim.imgs[0]);
-      var testimagehtml = '<table><tr><td><img src="images/'+stim.imgs[0]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[1]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[2]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[3]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[4]+'" style="height:100px;"></td></tr>'+
-                                      '<tr><td><img src="images/'+stim.imgs[5]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[6]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[7]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[8]+'" style="height:100px;"></td>'+
-                                      '<td><img src="images/'+stim.imgs[9]+'" style="height:100px;"></td>';
-      $("#testimage").html(testimagehtml); 
+
+      $("#testimage").html(testimagehtml);
 
       var sentence = stim.sentence;
       var sentencehtml = "<p>";
@@ -160,7 +147,7 @@ function make_slides(f) {
         this.log_responses();
         _stream.apply(this);
     }
-  }, 
+  },
     log_responses : function() {
         exp.data_trials.push({
           "item" : this.stim.item,
@@ -616,7 +603,7 @@ function init() {
   ]);
 
   var items = _.shuffle([
-	
+
 	{
   "item": "aquarium",
   "contextsentence": "Here are aquariums with starfish, jellyfish, and seahorses in them.",
@@ -646,7 +633,7 @@ function init() {
   "content2" : "scooters",
   "content3" : "bikes",
   "content0" : "cars"
-}, 
+},
   {
   "item": "house",
   "contextsentence": "Here are houses with clowns, batmen, and genies in them.",
@@ -666,7 +653,7 @@ function init() {
   "content2" : "pencils",
   "content3" : "rulers",
   "content0" : "erasers"
-} 
+}
   ]);//.slice(0,36);
 
   function makeStim(i) {
@@ -680,17 +667,6 @@ function init() {
     var item_id = item.item;
     var contextsentence = item.contextsentence;
     var order = item.fixedorder;
-    var imgs = [];
-    imgs.push(item.item+"_100.jpeg");
-    imgs.push(item.item+"_100.jpeg");
-    imgs.push(item.item+"_100.jpeg");
-    imgs.push(item.item+"_100.jpeg");
-    imgs.push(item.item+"_100.jpeg");
-    imgs.push(item.item+"_110.jpeg");
-    imgs.push(item.item+"_110.jpeg");
-    imgs.push(item.item+"_110.jpeg");
-    imgs.push(item.item+"_111.jpeg");
-    imgs.push(item.item+"_111.jpeg");
 
     for (var j=0; j<sentence_type.length;j++) {
       var sentence_start = [name, "says: "];
@@ -718,7 +694,7 @@ function init() {
             }
           }
         }
-      }     
+      }
   exp.all_stims.push( {
       "item": item_id,
       "noun" : item.noun,
@@ -726,7 +702,6 @@ function init() {
       "sentence": sentence,
       "name": name,
       "gender": gender,
-      "imgs": _.shuffle(imgs),
       "sentence_type" : sentence_type[j],
       "quantifier" : quantifiers[j]
     });
@@ -738,7 +713,6 @@ function init() {
       "sentence": sentence_start.concat(["Some","of","these",item.noun,"have",order[0],"in","them"]),
       "name": name,
       "gender": gender,
-      "imgs": _.shuffle(imgs),
       "sentence_type" : "underinformative",
       "quantifier" : "Some"
     });
@@ -749,10 +723,9 @@ function init() {
       "sentence": sentence_start.concat(["Some","of","these",item.noun,"have",order[2],"in","them"]),
       "name": name,
       "gender": gender,
-      "imgs": _.shuffle(imgs),
       "sentence_type" : "atypical",
       "quantifier" : "Some"
-    }); 
+    });
   }
   exp.all_stims = [];
   for (var i=0; i<items.length; i++) {
@@ -772,7 +745,7 @@ function init() {
     };
   //blocks of the experiment:
   exp.structure=["i0", "practicetrial", "sprtrial", 'subj_info', 'thanks'];
-  
+
   exp.data_trials = [];
   //make corresponding slides:
   exp.slides = make_slides(exp);
