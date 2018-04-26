@@ -1,21 +1,15 @@
 /// init ///
 function init() {
 
-  var names = _.shuffle([
-
-  ]);
-
-  var items = _.shuffle([
-
-
-  ]);//.slice(0,36) -- what does this mean?;
+  //.slice(0,36) -- what does this mean?;
+  // stimuli = a list of dictionaries, see the .json file
 
   function makeStim(i) {
-    var quantifiers = _.shuffle(["Some","All","None"]);
-    var sentence_type = _.shuffle(["true","false"]);
+    var condition = _.shuffle(["all","any"]);
+    var segment4 = _.shuffle(["some of them","only some of them"]);
     //get item
-    var name_data = names[i];
-    var name = name_data.name;
+    var sentence = stimuli[i];
+    var segment1 = sentence.segment 1;
     var gender = name_data.gender;
     var item = items[i];
     var item_id = item.item;
