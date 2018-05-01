@@ -1,3 +1,13 @@
+function advanceWord(word_id) {
+  console.log("got in here "+word_id);
+  $(".sprword").hide();
+  $(".sprword").css('visibility','hidden');
+  $("#"+word_id).show();
+  $("#"+word_id).css('visibility','visible');
+  // the 1st and 3rd lines were hidden, need to ask how this works
+  exp.word_start = Date.now();
+}
+
 function make_slides(f) {
   var   slides = {};
 
@@ -37,13 +47,6 @@ function make_slides(f) {
     }
   });
 
-  slides.example = slide({
-    name: "example",
-    start: function() {
-      $(".err").hide();
-      $('input[name=exChoice]:checked').prop('checked', false);
-    },
-    button : function() {
     // make sure participants understand
     // the task before they continue
       // response = $("#text_response").val();
@@ -56,73 +59,6 @@ function make_slides(f) {
       //   });
       //   exp.go(); //make sure this is at the *end*, after you log your data
       // }
-      exp.go(); //use exp.go() if and only if there is no "present" data.
-    },
-  });
-
-  slides.priming = slide({
-    name: "priming",
-    start: function() {
-      $("#primingCondition").html("This is a priming sentece with " + exp.condition);
-    },
-
-
-    /* trial information for this block
-     (the variable 'stim' will change between each of these values,
-      and for each of these, present_handle will be run.)
-      Remember to comment out the other
-      specification of present below*/
-    present: _.shuffle([
-      {speaker: "John"},
-      {speaker: "Mary"}
-    ]),
-
-    /* It might be the case that the
-    array of things you want to present depends
-    on the condition. A solution is
-    to define the array when the condition
-    is determined, e.g., in init().
-    Remember to comment out the other
-    specification of present above*/
-    //present: _.shuffle(exp.primingStims),
-
-    present_handle: function(stim){
-
-      $("#primingCondition").html("This is a sentence with " + exp.condition);
-
-      // use this version if present is directly given
-      $("#primingSentence").html(stim.speaker +
-       " said a sentence with " + exp.condition);
-
-      // use this version if present depends on the condition
-      //$("#primingSentence").html(stim);
-      this.stim = stim; //you can store this information in the slide so you can record it later.
-    },
-
-    button : function() {
-      _stream.apply(this);
-    },
-  });
-
-  // slides.example = slide({
-  //   name: "example",
-  //   start: function() {
-  //     $(".err").hide();
-  //     $(".display_condition").html("You are in " + exp.condition + ".");
-  //   },
-  //   button : function() {
-  //     response = $("#text_response").val();
-  //     if (response.length == 0) {
-  //       $(".err").show();
-  //     } else {
-  //       exp.data_trials.push({
-  //         "trial_type" : "example",
-  //         "response" : response
-  //       });
-  //       exp.go(); //make sure this is at the *end*, after you log your data
-  //     }
-  //   },
-  // });
 
   slides.critical = slide({
     name : "critical",
@@ -135,7 +71,7 @@ function make_slides(f) {
     present_handle : function(stim) {
       console.log(stim);
       $(".err").hide();
-      // $("#truefalse").hide();
+      $("#truefalse").hide();
       $("#advancebutton").hide();
     	this.trial_start = Date.now();
       exp.word_counter = 0;
@@ -169,15 +105,15 @@ function make_slides(f) {
       }
     },
     button : function() {
-      // var ok_to_go_on = true;
-      // if ($('input[name="tf"]:checked').val() == undefined) {
-        // ok_to_go_on = false;
-        // $(".err").show();
-      // } else {
+      var ok_to_go_on = true;
+      if ($('input[name="tf"]:checked').val() == undefined) {
+        ok_to_go_on = false;
+        $(".err").show();
+      } else {
         this.log_responses();
         _stream.apply(this);
-    // }
-  },
+      }
+    },
     log_responses : function() {
         exp.data_trials.push({
           "item" : this.stim.item,
@@ -190,212 +126,6 @@ function make_slides(f) {
         });
     }
   });
-
-  // slides.one_slider = slide({
-  //   name : "one_slider",
-  //
-  //   /* trial information for this block
-  //    (the variable 'stim' will change between each of these values,
-  //     and for each of these, present_handle will be run.) */
-  //   present : [
-  //     {subject: "dog", object: "ball"},
-  //     {subject: "cat", object: "windowsill"},
-  //     {subject: "bird", object: "shiny object"},
-  //   ],
-  //
-  //   //this gets run only at the beginning of the block
-  //   present_handle : function(stim) {
-  //     $(".err").hide();
-  //
-  //     this.stim = stim; //I like to store this information in the slide so I can record it later.
-  //
-  //
-  //     $(".prompt").html(stim.subject + "s like " + stim.object + "s.");
-  //     this.init_sliders();
-  //     exp.sliderPost = null; //erase current slider value
-  //   },
-  //
-  //   button : function() {
-  //     if (exp.sliderPost == null) {
-  //       $(".err").show();
-  //     } else {
-  //       this.log_responses();
-  //
-  //       /* use _stream.apply(this); if and only if there is
-  //       "present" data. (and only *after* responses are logged) */
-  //       _stream.apply(this);
-  //     }
-  //   },
-  //
-  //   init_sliders : function() {
-  //     utils.make_slider("#single_slider", function(event, ui) {
-  //       exp.sliderPost = ui.value;
-  //     });
-  //   },
-  //
-  //   log_responses : function() {
-  //     exp.data_trials.push({
-  //       "trial_type" : "one_slider",
-  //       "response" : exp.sliderPost
-  //     });
-  //   }
-  // });
-
-  // slides.multi_slider = slide({
-  //   name : "multi_slider",
-  //   present : _.shuffle([
-  //     {"critter":"Wugs", "property":"fur"},
-  //     {"critter":"Blicks", "property":"fur"}
-  //   ]),
-  //   present_handle : function(stim) {
-  //     $(".err").hide();
-  //     this.stim = stim; //FRED: allows you to access stim in helpers
-  //
-  //     this.sentence_types = _.shuffle(["generic", "negation", "always", "sometimes", "usually"]);
-  //     var sentences = {
-  //       "generic": stim.critter + " have " + stim.property + ".",
-  //       "negation": stim.critter + " do not have " + stim.property + ".",
-  //       "always": stim.critter + " always have " + stim.property + ".",
-  //       "sometimes": stim.critter + " sometimes have " + stim.property + ".",
-  //       "usually": stim.critter + " usually have " + stim.property + "."
-  //     };
-  //
-  //     this.n_sliders = this.sentence_types.length;
-  //     $(".slider_row").remove();
-  //     for (var i=0; i<this.n_sliders; i++) {
-  //       var sentence_type = this.sentence_types[i];
-  //       var sentence = sentences[sentence_type];
-  //       $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="sentence' + i + '">' + sentence + '</td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
-  //       utils.match_row_height("#multi_slider_table", ".slider_target");
-  //     }
-  //
-  //     this.init_sliders(this.sentence_types);
-  //     exp.sliderPost = [];
-  //   },
-  //
-  //   button : function() {
-  //     if (exp.sliderPost.length < this.n_sliders) {
-  //       $(".err").show();
-  //     } else {
-  //       this.log_responses();
-  //       _stream.apply(this); //use _stream.apply(this); if and only if there is "present" data.
-  //     }
-  //   },
-  //
-  //   init_sliders : function(sentence_types) {
-  //     for (var i=0; i<sentence_types.length; i++) {
-  //       var sentence_type = sentence_types[i];
-  //       utils.make_slider("#slider" + i, this.make_slider_callback(i));
-  //     }
-  //   },
-  //   make_slider_callback : function(i) {
-  //     return function(event, ui) {
-  //       exp.sliderPost[i] = ui.value;
-  //     };
-  //   },
-  //   log_responses : function() {
-  //     for (var i=0; i<this.sentence_types.length; i++) {
-  //       var sentence_type = this.sentence_types[i];
-  //       exp.data_trials.push({
-  //         "trial_type" : "multi_slider",
-  //         "sentence_type" : sentence_type,
-  //         "response" : exp.sliderPost[i]
-  //       });
-  //     }
-  //   },
-  // });
-  //
-  // slides.vertical_sliders = slide({
-  //   name : "vertical_sliders",
-  //   present : _.shuffle([
-  //     {
-  //       "bins" : [
-  //         {
-  //           "min" : 0,
-  //           "max" : 10
-  //         },
-  //         {
-  //           "min" : 10,
-  //           "max" : 20
-  //         },
-  //         {
-  //           "min" : 20,
-  //           "max" : 30
-  //         },
-  //         {
-  //           "min" : 30,
-  //           "max" : 40
-  //         },
-  //         {
-  //           "min" : 40,
-  //           "max" : 50
-  //         },
-  //         {
-  //           "min" : 50,
-  //           "max" : 60
-  //         }
-  //       ],
-  //       "question": "How tall is tall?"
-  //     }
-  //   ]),
-  //   present_handle : function(stim) {
-  //     $(".err").hide();
-  //     this.stim = stim;
-  //
-  //     $("#vertical_question").html(stim.question);
-  //
-  //     $("#sliders").empty();
-  //     $("#bin_labels").empty();
-  //
-  //     $("#sliders").append('<td> \
-  //           <div id="slider_endpoint_labels"> \
-  //             <div class="top">likely</div> \
-  //             <div class="bottom">unlikely</div>\
-  //           </div>\
-  //         </td>')
-  //     $("#bin_labels").append('<td></td>')
-  //
-  //     this.n_sliders = stim.bins.length;
-  //     for (var i=0; i<stim.bins.length; i++) {
-  //       $("#sliders").append("<td><div id='vslider" + i + "' class='vertical_slider'>|</div></td>");
-  //       $("#bin_labels").append("<td class='bin_label'>" + stim.bins[i].min + " - " + stim.bins[i].max + "</td>");
-  //     }
-  //
-  //     this.init_sliders(stim);
-  //     exp.sliderPost = [];
-  //   },
-  //
-  //   button : function() {
-  //     if (exp.sliderPost.length < this.n_sliders) {
-  //       $(".err").show();
-  //     } else {
-  //       this.log_responses();
-  //       _stream.apply(this); //use _stream.apply(this); if and only if there is "present" data.
-  //     }
-  //   },
-  //
-  //   init_sliders : function(stim) {
-  //     for (var i=0; i<stim.bins.length; i++) {
-  //       utils.make_slider("#vslider" + i, this.make_slider_callback(i), "vertical");
-  //     }
-  //   },
-  //   make_slider_callback : function(i) {
-  //     return function(event, ui) {
-  //       exp.sliderPost[i] = ui.value;
-  //     };
-  //   },
-  //   log_responses : function() {
-  //     for (var i=0; i<this.stim.bins.length; i++) {
-  //       exp.data_trials.push({
-  //         "trial_type" : "vertical_slider",
-  //         "question" : this.stim.question,
-  //         "response" : exp.sliderPost[i],
-  //         "min" : this.stim.bins[i].min,
-  //         "max" : this.stim.bins[i].max
-  //       });
-  //     }
-  //   },
-  // });
 
   slides.subj_info =  slide({
     name : "subj_info",
@@ -410,7 +140,6 @@ function make_slides(f) {
         education : $("#education").val(),
         comments : $("#comments").val(),
         problems: $("#problems").val(),
-        fairprice: $("#fairprice").val()
       };
       exp.go(); //use exp.go() if and only if there is no "present" data.
     }
@@ -434,76 +163,67 @@ function make_slides(f) {
   return slides;
 }
 
-function makeStim(sentence) {
-  var condition = _.shuffle(["all","any"]);
-  var segment4 = _.shuffle(["some of them","only some of them"]);
-  //get item
-  // var sentence = stimuli[i];
-  var segment1 = sentence.segment1;
-  if (sentence.type == "critical") {
-    var segment2 = sentence.segment2a + condition + sentence.segment2b;
-  } else {
-    var segment2 = sentence.segment2;
-  }
-  var segment3 = sentence.segment3
-  var segment4 = sentence.segment5
-  var segment6 = sentence.segment6
-  var segment7 = sentence.segment7
-  var segment8 = sentence.segment8
-  var segment9 = sentence.segment9
-  var segment10 = sentence.segment10
-  var segment11 = sentence.segment11
-  var segment12 = sentence.segment12
-  var comque = sentence.comque
-  var answer1 = _.shuffle([sentence.corans, sentence.incorans])
-  if (answer1 == sentence.corans) {
-    var answer2 = sentence.incorans
-  } else {
-    var answer2 = sentence.corans
-  }
-  var corans = sentence.corans
-
-  var  stimuli_sentence = segment1+segment2+segment3+segment4+segment5+segment6+segment7+segment8+segment9+segment10+segment11+segment12
-
-  exp.all_stims.push(     {
-      "condition": condition,
-      "segment4": segment4,
-        "type": "critical",
-        "sentence": stimuli_sentence,
-        "segment1": segment1,
-        "segment2": segment2,
-        "segment3": "John said that",
-        "segment5": "were.",
-        "segment6": "He added",
-        "segment7": "that",
-        "segment8": "the rest",
-        "segment9": "would be",
-        "segment10": "staying",
-        "segment11": "in a hotel.",
-        "segment12": "",
-        "comque": comque,
-        "corans": corans,
-        "incorans": sentence.incorans
-      });
-};
 /// init ///
 function init() {
   //specify conditions. Decide between-subject conditions, most important part here
   // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
-  exp.structure=["i0", "consent", "instructions",  "critical", 'subj_info', 'thanks'];
+  exp.structure=["i0", "consent", "instructions", "critical", 'subj_info', 'thanks'];
 
-  // exp.primingStims = {"comparatives": ["John ate more food than this burger.",
-                              // "Mary had more pets than Fido."],
-             // "multiple negations": ["No head injury is too severe to depair",
-             // "No head injury is too trivial to ignore"]
-    // }[exp.condition];
+  function makeStim() {
+    // I deleted the argument "sentence" in makeStim(sentence)
+    var condition = _.shuffle(["all","any"]);
+    var segment4 = _.shuffle(["some of them","only some of them"]);
+    //get item
+    var sentence = stimuli[0];
+    // var segment1 = sentence.segment1;
+    if (sentence.type == "critical") {
+      var segment2 = sentence.segment2a + condition + sentence.segment2b;
+    } else {
+      var segment2 = sentence.segment2;
+    }
+    var comque = sentence.comque
+    var answer1 = _.shuffle([sentence.corans, sentence.incorans])
+    if (answer1 == sentence.corans) {
+      var answer2 = sentence.incorans
+    } else {
+      var answer2 = sentence.corans
+    }
+
+    var  stimuli_sentence = sentence.segment1 + segment2 + sentence.segment3 +
+    segment4 + sentence.segment5 + sentence.segment6 + sentence.segment7 +
+    sentence.segment8 + sentence.segment9 + sentence.segment10 + sentence.segment11 +
+    sentence.segment12
+
+    exp.all_stims.push({
+        "condition": condition,
+        "segment4": segment4,
+        "type": sentence.type,
+        "segment1": sentence.segment1,
+        "segment2": segment2,
+        "segment3": sentence.segment3,
+        "segment4": segment4,
+        "segment5": sentence.segment5,
+        "segment6": sentence.segment6,
+        "segment7": sentence.segment7,
+        "segment8": sentence.segment8,
+        "segment9": sentence.segment9,
+        "segment10": sentence.segment10,
+        "segment11": sentence.segment11,
+        "segment12": sentence.segment12,
+        "comque": sentence.comque,
+        "corans": sentence.corans,
+        "answer1": answer1
+        "answer2": answer2
+        });
+  };
+//Shouldn't I put this empty list before makeStim?
     exp.all_stims = [];
 
-    for (var i = 0; i < stimuli.length; i++) {
-      makeStim(stimuli[i]);
-    };
-
+    // for (var i = 0; i < stimuli.length; i++) {
+    //   makeStim(stimuli[i]);
+    // };
+    // No loop at the moment. Just displaying one sentence.
 
     console.log(exp.all_stims);
 

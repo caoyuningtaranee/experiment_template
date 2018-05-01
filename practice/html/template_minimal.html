@@ -29,7 +29,7 @@
   <!--Shared set-up ends-->
 
   <!--Things specific to this experiment-->
-    <title>Experiment for LINGUIST 245</title>
+    <title>Language Study</title>
     <script src="../js/template_minimal.js"></script>
     <script src="../js/test_stimuli.js"></script>
     <link href="../css/local-style.css" rel="stylesheet" type="text/css"/>
@@ -48,7 +48,7 @@
   the experiment. Change instruction tags later-->
   <div class="slide" id="i0" >
     <p id="cocolab">Stanford Linguistics</p>
-    <p id="instruct-text">You will read some sentences and be asked some questions about how they sound. The HIT should take ~2 minutes. Please pay attention, thanks!</p>
+    <p id="instruct-text">Thank you for participating in our study. In this study, you will read several paragraphs and sometimes answer questions about them. The HIT should take 40~50 minutes. Your patience is highly appreciated. Thanks!</p>
     <button id="start_button" type="button">Start Experiment</button>
   </div>
 
@@ -91,21 +91,16 @@
 <!--Instruction slide-->
 <div class="slide" id="instructions">
   <h3>Instructions</h3>
-  <p>You will read a few English sentences
-    and for each sentence you
-    will be asked whether it is grammatical
-    (in the sense of Chomsky 1957).</p>
-  <p>Here is a grammatical sentence:<br />
-    "Colorless green ideas sleep furiously"</p>
-  <p>And here is an ungrammatical sentence:<br />
-      "Furiously sleep ideas green colorless"</p>
+  <p>This is how it works: read through the vignette simply by pressing the space bar.
+    Sometimes there will be a comprehension question after the vignette that checks whether you understood the vignette or not.
+    You can feel free to take breaks between vignettes, but please do NOT take a break when you are reading through one vignette.
+    Please do your best to read the sentences at a natural reading speed.</p>
+  <p>We will start from 8 practice trials. Please click on "continue" to proceed.</p>
   <button onclick="_s.button()">Continue</button>
 </div>
 
-
-
+<!-- Need to insert practice trials here!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <div class="slide" id="critical">
-  <!-- <p id="contextsentence">{{}}</p> -->
 
   <div id="sentence">
     {{}}
@@ -135,32 +130,6 @@
     <div class="err">Please adjust the slider before continuing.</div>
   </div>
 -->
-<!--
-  <div class="slide" id="multi_slider">
-    <p>Here are a bunch of sliders.</p>
-    <p>How likely do you think it is that someone would say each of the following?</p>
-    <table id="multi_slider_table" class="slider_table">
-      <tr><td></td><td class="left">very unlikely</td><td class="right">very likely</td></tr>
-    </table>
-    <button onclick="_s.button()">Continue</button>
-    <div class="err">Please adjust all the sliders before continuing.</div>
-  </div>
-
-  <div class="slide" id="vertical_sliders">
-    <p>Here are a bunch of vertical sliders.</p>
-    <p id="vertical_question">{{}}</p>
-    <table id="vertical_slider_table" class="slider_table">
-      <tbody>
-        <tr id="sliders">
-        </tr>
-        <tr id="bin_labels">
-        </tr>
-      </tbody>
-    </table>
-    <button onclick="_s.button()">Continue</button>
-    <div class="err">Please adjust all the sliders before continuing.</div>
-  </div>
--->
 
 <!--Participant info; modified to suit your need-->
   <div class="slide"  id="subj_info">
@@ -175,9 +144,6 @@
 
       <p>Were there any problems or bugs in the experiment?</p>
       <textarea id="problems" rows="2" cols="50"></textarea>
-
-      <p>What do you think is a fair price for the work you did?</p>
-      <textarea id="fairprice" rows="1" cols="10"></textarea>
 
       <p>Gender:
         <select id="gender">
