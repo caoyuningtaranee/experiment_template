@@ -9,40 +9,33 @@ function init() {
     var segment4 = _.shuffle(["some of them","only some of them"]);
     //get item
     var sentence = stimuli[i];
-    var segment1 = sentence.segment 1;
-    var gender = name_data.gender;
-    var item = items[i];
-    var item_id = item.item;
-    var contextsentence = item.contextsentence;
-    var order = item.fixedorder;
+    var segment1 = sentence.segment1;
+    if (sentence.type == "critical") {
+      var segment2 = sentence.segment2a + condition + sentence.segment2b;
+    } else {
+      var segment2 = sentence.segment2;
+    }
+    var segment3 = sentence.segment3
+    var segment4 = sentence.segment5
+    var segment6 = sentence.segment6
+    var segment7 = sentence.segment7
+    var segment8 = sentence.segment8
+    var segment9 = sentence.segment9
+    var segment10 = sentence.segment10
+    var segment11 = sentence.segment11
+    var segment12 = sentence.segment12
+    var comque = sentence.comque
+    var answer1 = _.shuffle([sentence.corans, sentence.incorans])
+    if (answer1 == sentence.corans) {
+      var answer2 = sentence.incorans
+    } else {
+      var answer2 = sentence.corans
+    }
+    var corans = sentence.corans
 
-    for (var j=0; j<sentence_type.length;j++) {
-      var sentence_start = [name, "says: "];
-      // var contents = _.shuffle(["content1","content2","content3"]);
-
-      if (sentence_type[j] == "true") {
-        if (quantifiers[j] == "All") {
-          sentence = sentence_start.concat(["All", "of", "these", item.noun, "have", order[0], "in", "them"]);
-        } else {
-          if (quantifiers[j] == "Some") {
-            sentence = sentence_start.concat(["Some", "of", "these", item.noun, "have", order[1], "in", "them"]);
-          } else {
-            sentence = sentence_start.concat(["None", "of", "these", item.noun, "have", item.content0, "in", "them"]);
-          }
-        }
-      } else {
-        if (sentence_type[j] == "false") {
-          if (quantifiers[j] == "All") {
-            sentence = sentence_start.concat(["All", "of", "these", item.noun, "have", item.content0, "in", "them"]);
-          } else {
-            if (quantifiers[j] == "Some") {
-              sentence = sentence_start.concat(["Some", "of", "these", item.noun, "have", item.content0, "in", "them"]);
-            } else {
-              sentence = sentence_start.concat(["None", "of", "these", item.noun, "have", order[0], "in", "them"]);
-            }
-          }
-        }
-      }
+    for (var j=0; j<stimuli.length;j++) {
+      stimuli_sentence = segment1+segment2+segment3+segment4+segment5+segment6+segment7+segment8+segment9+segment10+segment11+segment12
+      
   exp.all_stims.push( {
       "item": item_id,
       "noun" : item.noun,

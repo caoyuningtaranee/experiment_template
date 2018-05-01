@@ -126,51 +126,68 @@ function make_slides(f) {
 
   slides.critical = slide({
     name : "critical",
-
-    /* trial information for this block
-     (the variable 'stim' will change between each of these values,
-      and for each of these, present_handle will be run.) */
-    present : _.shuffle([
-       "John and Mary laugh.",
-       "Does John and Mary laugh?",
-       "John and I am happy."
-    ]),
-
-    //this gets run only at the beginning of the block
-    present_handle : function(stim) {
-      $(".err").hide();
-
-      // uncheck the button and erase the previous value
-      exp.criticalResponse == null;
-      $('input[name=criticalChoice]:checked').prop('checked', false);
-      $("#criticalSentence").html(stim);
-
-      this.stim = stim; //you can store this information in the slide so you can record it later.
-
+    present : exp.all_stims,
+    start : function() {
+	   $(".err").hide();
+     // $('input[name="tf"]').prop('checked',false);
+     // $('no').prop('checked',false);
     },
+    present_handle : function(stim) {
+      console.log(stim);
+      $(".err").hide();
+      // $("#truefalse").hide();
+      $("#advancebutton").hide();
+    	this.trial_start = Date.now();
+      exp.word_counter = 0;
+      _s.rts = [];
+      this.stim = stim;
 
-    button : function() {
-      //find out the checked option
-      exp.criticalResponse = $('input[name=criticalChoice]:checked').val();
+      var sentence = stim.sentence;
+      var sentencehtml = "<p>";
+      for (i=0;i<sentence.length;i++) {
+        sentencehtml = sentencehtml + '<span id="w'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
+      }
+      sentencehtml = sentencehtml + "</p>";
+      $("#sentence").html(sentencehtml);
+      console.log("sentencehtml");
+      console.log(sentencehtml);
 
-      // verify the response
-      if (exp.criticalResponse == null) {
-        $(".err").show();
-      } else {
-        this.log_responses();
-
-        /* use _stream.apply(this); if and only if there is
-        "present" data. (and only *after* responses are logged) */
-        _stream.apply(this);
+      document.body.onkeyup = function(e){
+        if(e.keyCode == 32){
+          _s.rts.push(Date.now()-exp.word_start);
+          exp.word_counter++;
+          if (exp.word_counter <= stim.sentence.length) {
+            advanceWord("w"+exp.word_counter);
+          } else {
+            $(".sprword").hide();
+            $('input[id=yes]').attr('checked',false);
+            $('input[id=no]').attr('checked',false);
+            $("#truefalse").show();
+            $("#advancebutton").show();
+          }
+        }
       }
     },
-
+    button : function() {
+      // var ok_to_go_on = true;
+      // if ($('input[name="tf"]:checked').val() == undefined) {
+        // ok_to_go_on = false;
+        // $(".err").show();
+      // } else {
+        this.log_responses();
+        _stream.apply(this);
+    // }
+  },
     log_responses : function() {
-      exp.data_trials.push({
-        "trial_type" : "critical",
-        "sentence": this.stim, // don't forget to log the stimulus
-        "response" : exp.criticalResponse
-      });
+        exp.data_trials.push({
+          "item" : this.stim.item,
+          "slide_number_in_experiment" : exp.phase,
+          "sentence": this.stim.sentence,
+          "sentence_type": this.stim.sentence_type,
+          "quantifier": this.stim.quantifier,
+          "rt" : Date.now() - _s.trial_start,
+          "response" : _s.rts.concat($('input[name="tf"]:checked').val())
+        });
     }
   });
 
@@ -417,18 +434,78 @@ function make_slides(f) {
   return slides;
 }
 
+function makeStim(sentence) {
+  var condition = _.shuffle(["all","any"]);
+  var segment4 = _.shuffle(["some of them","only some of them"]);
+  //get item
+  // var sentence = stimuli[i];
+  var segment1 = sentence.segment1;
+  if (sentence.type == "critical") {
+    var segment2 = sentence.segment2a + condition + sentence.segment2b;
+  } else {
+    var segment2 = sentence.segment2;
+  }
+  var segment3 = sentence.segment3
+  var segment4 = sentence.segment5
+  var segment6 = sentence.segment6
+  var segment7 = sentence.segment7
+  var segment8 = sentence.segment8
+  var segment9 = sentence.segment9
+  var segment10 = sentence.segment10
+  var segment11 = sentence.segment11
+  var segment12 = sentence.segment12
+  var comque = sentence.comque
+  var answer1 = _.shuffle([sentence.corans, sentence.incorans])
+  if (answer1 == sentence.corans) {
+    var answer2 = sentence.incorans
+  } else {
+    var answer2 = sentence.corans
+  }
+  var corans = sentence.corans
+
+  var  stimuli_sentence = segment1+segment2+segment3+segment4+segment5+segment6+segment7+segment8+segment9+segment10+segment11+segment12
+
+  exp.all_stims.push(     {
+      "condition": condition,
+      "segment4": segment4,
+        "type": "critical",
+        "sentence": stimuli_sentence,
+        "segment1": segment1,
+        "segment2": segment2,
+        "segment3": "John said that",
+        "segment5": "were.",
+        "segment6": "He added",
+        "segment7": "that",
+        "segment8": "the rest",
+        "segment9": "would be",
+        "segment10": "staying",
+        "segment11": "in a hotel.",
+        "segment12": "",
+        "comque": comque,
+        "corans": corans,
+        "incorans": sentence.incorans
+      });
+};
 /// init ///
 function init() {
   //specify conditions. Decide between-subject conditions, most important part here
-  exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
+  // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
-  exp.structure=["i0", "consent", "instructions", "example", "priming", "critical", 'subj_info', 'thanks'];
+  exp.structure=["i0", "consent", "instructions",  "critical", 'subj_info', 'thanks'];
 
-  exp.primingStims = {"comparatives": ["John ate more food than this burger.",
-                              "Mary had more pets than Fido."],
-             "multiple negations": ["No head injury is too severe to depair",
-             "No head injury is too trivial to ignore"]
-    }[exp.condition];
+  // exp.primingStims = {"comparatives": ["John ate more food than this burger.",
+                              // "Mary had more pets than Fido."],
+             // "multiple negations": ["No head injury is too severe to depair",
+             // "No head injury is too trivial to ignore"]
+    // }[exp.condition];
+    exp.all_stims = [];
+
+    for (var i = 0; i < stimuli.length; i++) {
+      makeStim(stimuli[i]);
+    };
+
+
+    console.log(exp.all_stims);
 
   // generally no need to change anything below
   exp.trials = [];

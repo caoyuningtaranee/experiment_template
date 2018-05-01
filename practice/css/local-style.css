@@ -3,3 +3,9 @@
 	width: 400;
 	margin: 10px;
 }
+
+.sprword {
+	text-align: left;
+	display : inline;
+	visibility: hidden;
+}

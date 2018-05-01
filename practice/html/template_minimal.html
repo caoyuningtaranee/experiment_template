@@ -31,6 +31,7 @@
   <!--Things specific to this experiment-->
     <title>Experiment for LINGUIST 245</title>
     <script src="../js/template_minimal.js"></script>
+    <script src="../js/test_stimuli.js"></script>
     <link href="../css/local-style.css" rel="stylesheet" type="text/css"/>
     <!-- experiment specific helper functions -->
     <!-- <script src="../js/local-utils.js"></script> -->
@@ -101,43 +102,26 @@
   <button onclick="_s.button()">Continue</button>
 </div>
 
-  <div class="slide" id="example">
-    <p>Here is a concrete example to familiarize you with the task.</p>
 
-    <p>Am what I doing is worthwhile?</p>
-
-    <input type="radio" name="exChoice" value="grammatical"> Grammatical
-    <input type="radio" name="exChoice" value="ungrammatical"> Ungrammatical<br>
-
-    <button onclick="_s.button()">Continue</button>
-    <p class="err">Are you sure? Please consult your native speaker intuition harder and try again.</p>
-  </div>
-
-  <div class="slide" id="priming">
-      <p id="primingCondition">{{}}</p>
-      <p id="primingSentence">{{}}</p>
-      <button onclick="_s.button()">Continue</button>
-  </div>
-
-
-<!--
-  <div class="slide" id="forcedChoice">
-    <p>Here is a single trial. Depending on the condition, you'll see different words below:</p>
-    <p class="display_condition">{{}}</p>
-    <input type="text" id="text_response"></input>
-    <button onclick="_s.button()">Continue</button>
-    <p class="err">Please write something.</p>
-  </div>
--->
 
 <div class="slide" id="critical">
-  <p id="criticalSentence"></p>
+  <!-- <p id="contextsentence">{{}}</p> -->
 
-  <input type="radio" name="criticalChoice" value="grammatical"> Grammatical
-  <input type="radio" name="criticalChoice" value="ungrammatical"> Ungrammatical<br>
+  <div id="sentence">
+    {{}}
+  </div>
 
-  <button onclick="_s.button()">Continue</button>
-  <div class="err">Please select one of the options.</div>
+  <!-- <div id="trueFalse"> -->
+    <!-- need help on defining the button and shuffling the answer-->
+    <!-- <p id="compreQuestion">{{}}</p> -->
+      <!-- <label><input id="answer1" type="radio"  name="tf" value="No"/>{{}}</label> -->
+      <!-- <label><input id="answer2" type="radio"  name="tf" value="Yes"/>{{}}</label> -->
+  <!-- </div> -->
+
+<br>
+  <button id="advancebutton" onclick="_s.button()">Continue</button>
+  <!-- Shall I delete the following line as well? -->
+  <div class="err">Please select an answer before continuing.</div>
 </div>
 
 <!--  <div class="slide" id="critical">

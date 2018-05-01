@@ -24,7 +24,7 @@ function advanceWord(word_id) {
 }
 
 function make_slides(f) {
-  
+
   var   slides = {};
 
   slides.i0 = slide({
