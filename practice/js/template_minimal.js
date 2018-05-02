@@ -170,12 +170,11 @@ function init() {
   //blocks of the experiment:
   exp.structure=["i0", "consent", "instructions", "critical", 'subj_info', 'thanks'];
 
-  function makeStim() {
-    // I deleted the argument "sentence" in makeStim(sentence)
-    var condition = _.shuffle(["all","any"]);
-    var segment4 = _.shuffle(["some of them","only some of them"]);
+  function makeStim(i) {
+    var condition = _.sample([" all "," any "]);
+    var segment4 = _.sample([" some of them "," only some of them "]);
     //get item
-    var sentence = stimuli[0];
+    var sentence = stimuli[i];
     // var segment1 = sentence.segment1;
     if (sentence.type == "critical") {
       var segment2 = sentence.segment2a + condition + sentence.segment2b;
@@ -195,6 +194,11 @@ function init() {
     sentence.segment8 + sentence.segment9 + sentence.segment10 + sentence.segment11 +
     sentence.segment12
 
+    var full_sentence = [sentence.segment1, segment2, sentence.segment3,
+    segment4, sentence.segment5, sentence.segment6, sentence.segment7,
+    sentence.segment8, sentence.segment9, sentence.segment10, sentence.segment11,
+    sentence.segment12];
+
     exp.all_stims.push({
         "condition": condition,
         "segment4": segment4,
@@ -213,19 +217,17 @@ function init() {
         "segment12": sentence.segment12,
         "comque": sentence.comque,
         "corans": sentence.corans,
-        "answer1": answer1
-        "answer2": answer2
+        "answer1": answer1,
+        "answer2": answer2,
+        "sentence": full_sentence
         });
   };
-//Shouldn't I put this empty list before makeStim?
-    exp.all_stims = [];
+  exp.all_stims = [];
+  for (var i=0; i<stimuli.length; i++) {
+    makeStim(i);
+  }
 
-    // for (var i = 0; i < stimuli.length; i++) {
-    //   makeStim(stimuli[i]);
-    // };
-    // No loop at the moment. Just displaying one sentence.
-
-    console.log(exp.all_stims);
+  // console.log(exp.all_stims);
 
   // generally no need to change anything below
   exp.trials = [];

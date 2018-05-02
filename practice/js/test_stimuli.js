@@ -862,7 +862,7 @@ var stimuli = [
    "comque": "",
    "corans": "",
    "incorans": ""
- }
+ },
 
   {
     "type": "filler-all-some",
