@@ -65,13 +65,14 @@ function make_slides(f) {
     present : exp.all_stims,
     start : function() {
 	   $(".err").hide();
-     // $('input[name="tf"]').prop('checked',false);
-     // $('no').prop('checked',false);
+     $("#comQue").hide();
+     $('input[name="answer"]').prop('checked',false);
+     // $('input[name="answer2"]').prop('checked',false);
     },
     present_handle : function(stim) {
       console.log(stim);
       $(".err").hide();
-      $("#truefalse").hide();
+      $("#compreques").hide();
       $("#advancebutton").hide();
     	this.trial_start = Date.now();
       exp.word_counter = 0;
@@ -94,11 +95,19 @@ function make_slides(f) {
           exp.word_counter++;
           if (exp.word_counter <= stim.sentence.length) {
             advanceWord("w"+exp.word_counter);
+            // Do I need "this." here?
+          } else if (stim.comque != ""){
+            $(".sprword").hide();
+            $('input[id=answer1]').attr('checked',false);
+            $('input[id=answer2]').attr('checked',false);
+            // do I need "this." here?
+            $("#comque").html(stim.comque);
+            $("#answer1").html(stim.answer1);
+            $("#answer2").html(stim.answer2);
+            $("#compreques").show();
+            $("#advancebutton").show();
           } else {
             $(".sprword").hide();
-            $('input[id=yes]').attr('checked',false);
-            $('input[id=no]').attr('checked',false);
-            $("#truefalse").show();
             $("#advancebutton").show();
           }
         }
@@ -106,7 +115,7 @@ function make_slides(f) {
     },
     button : function() {
       var ok_to_go_on = true;
-      if ($('input[name="tf"]:checked').val() == undefined) {
+      if ($('input[name="answer"]:checked').val() == undefined) {
         ok_to_go_on = false;
         $(".err").show();
       } else {
@@ -116,13 +125,14 @@ function make_slides(f) {
     },
     log_responses : function() {
         exp.data_trials.push({
-          "item" : this.stim.item,
+          "type" : this.stim.type,
+          "condition" : this.stim.condition,
+          "segment4" : this.stim.segment4,
           "slide_number_in_experiment" : exp.phase,
-          "sentence": this.stim.sentence,
-          "sentence_type": this.stim.sentence_type,
-          "quantifier": this.stim.quantifier,
+          "sentence" : this.stim.full_sentence,
           "rt" : Date.now() - _s.trial_start,
-          "response" : _s.rts.concat($('input[name="tf"]:checked').val())
+          "response" : _s.rts.concat($('input[name="answer"]:checked').val()),
+          "corans" : this.stim.corans,
         });
     }
   });
@@ -182,7 +192,7 @@ function init() {
       var segment2 = sentence.segment2;
     }
     var comque = sentence.comque
-    var answer1 = _.shuffle([sentence.corans, sentence.incorans])
+    var answer1 = _.sample([sentence.corans, sentence.incorans])
     if (answer1 == sentence.corans) {
       var answer2 = sentence.incorans
     } else {
