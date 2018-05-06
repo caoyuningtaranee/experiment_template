@@ -99,17 +99,37 @@
   <button onclick="_s.button()">Continue</button>
 </div>
 
-<!-- Need to insert practice trials here!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<div class="slide" id="critical">
 
+<div class="slide" id="practicetrial">
   <div id="sentence">
     {{}}
   </div>
 
   <div id="compreques">
     <p id="comque">{{}}</p>
-      <label><input id="answer1" type="radio" name="answer"/>{{}}</label>
-      <label><input id="answer2" type="radio" name="answer"/>{{}}</label>
+      <input id="answer1" type="radio" name="answer"/><label id='answer1lab'>{{}}</label>
+      <input id="answer2" type="radio" name="answer"/><label id='answer2lab'>{{}}</label>
+  </div>
+
+  <br>
+    <button id="advancebutton" onclick="_s.button()">Continue</button>
+    <div class="err">Please select an answer before continuing.</div>
+  </div>
+
+  <p id="practice2">Great! Now let's start.</p>
+
+  <!-- <button id="contbutton" onclick="_s.button()">Continue</button> -->
+</div>
+
+<div class="slide" id="critical">
+  <div id="sentence">
+    {{}}
+  </div>
+
+  <div id="compreques">
+    <p id="comque">{{}}</p>
+      <input id="answer1" type="radio" name="answer"/><label id="answer1lab">{{}}</label>
+      <input id="answer2" type="radio" name="answer"/><label id="answer2lab">{{}}</label>
   </div>
 
 <br>

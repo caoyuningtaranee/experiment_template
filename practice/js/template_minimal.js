@@ -59,6 +59,91 @@ function make_slides(f) {
       //   });
       //   exp.go(); //make sure this is at the *end*, after you log your data
       // }
+      slides.practicetrial = slide({
+        name : "practicetrial",
+        present : exp.prac_stims,
+        start : function() {
+         $(".err").hide();
+         $("#comQue").hide();
+         $("#practice2").hide();
+         $('input[name="answer"]').prop('checked',false);
+        },
+        present_handle : function(stim) {
+          console.log(stim);
+          $(".err").hide();
+          $("#compreques").hide();
+          $("#advancebutton").hide();
+          this.trial_start = Date.now();
+          exp.word_counter = 0;
+          _s.rts = [];
+          this.stim = stim;
+
+          var sentence = stim.sentence;
+          var sentencehtml = "<p>";
+          for (i=0;i<sentence.length;i++) {
+            sentencehtml = sentencehtml + '<span id="w'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
+          }
+          sentencehtml = sentencehtml + "</p>";
+          $("#sentence").html(sentencehtml);
+          console.log("sentencehtml");
+          console.log(sentencehtml);
+
+          document.body.onkeyup = function(e){
+            if(e.keyCode == 32){
+              _s.rts.push(Date.now()-exp.word_start);
+              exp.word_counter++;
+              if (exp.word_counter <= stim.sentence.length) {
+                advanceWord("w"+exp.word_counter);
+                // Do I need "this." here?
+              } else if (stim.comque != ""){
+                $(".sprword").hide();
+                $('input[id=answer1]').attr('checked',false);
+                $('input[id=answer2]').attr('checked',false);
+                // do I need "this." here?
+                $("#comque").html(stim.comque);
+                $("#answer1lab").html(stim.answer1);
+                $("#answer2lab").html(stim.answer2);
+                $("#compreques").show();
+                $("#advancebutton").show();
+              } else {
+                $(".sprword").hide();
+                $("#advancebutton").show();
+                $("#practice2").hide();
+                $(".err").hide()
+              }
+            }
+          }
+        },
+        button : function() {
+          var ok_to_go_on = true;
+          if ($('input[name="answer"]:checked').val() == undefined) {
+            ok_to_go_on = false;
+            $(".err").show();
+          } else {
+            this.log_responses();
+            _stream.apply(this);
+          }
+        },
+        log_responses : function() {
+          if ($('input[id="answer1"]:checked').val() =='on') {
+            answer = this.stim.answer1
+          } else {
+            answer = this.stim.answer2
+          }
+            exp.data_trials.push({
+              "type" : this.stim.type,
+              "condition" : this.stim.condition,
+              "segment4" : this.stim.segment4,
+              "slide_number_in_experiment" : exp.phase,
+              "sentence" : this.stim.sentence,
+              "complete_sentence" : this.stim.complete_sentence,
+              "rt" : Date.now() - _s.trial_start,
+              "answer" : answer,
+              "response": _s.rts, //.concat($('input[name="answer"]:checked').val()),
+              "corans" : this.stim.corans,
+            });
+        }
+      });
 
   slides.critical = slide({
     name : "critical",
@@ -102,13 +187,14 @@ function make_slides(f) {
             $('input[id=answer2]').attr('checked',false);
             // do I need "this." here?
             $("#comque").html(stim.comque);
-            $("#answer1").html(stim.answer1);
-            $("#answer2").html(stim.answer2);
+            $("#answer1lab").html(stim.answer1);
+            $("#answer2lab").html(stim.answer2);
             $("#compreques").show();
             $("#advancebutton").show();
           } else {
             $(".sprword").hide();
             $("#advancebutton").show();
+            $(".err").hide()
           }
         }
       }
@@ -124,14 +210,21 @@ function make_slides(f) {
       }
     },
     log_responses : function() {
+      if ($('input[id="answer1"]:checked').val() =='on') {
+        answer = this.stim.answer1
+      } else {
+        answer = this.stim.answer2
+      }
         exp.data_trials.push({
           "type" : this.stim.type,
           "condition" : this.stim.condition,
           "segment4" : this.stim.segment4,
           "slide_number_in_experiment" : exp.phase,
-          "sentence" : this.stim.full_sentence,
+          "sentence" : this.stim.sentence,
+          "complete_sentence" : this.stim.complete_sentence,
           "rt" : Date.now() - _s.trial_start,
-          "response" : _s.rts.concat($('input[name="answer"]:checked').val()),
+          "answer" : answer,
+          "response": _s.rts, //.concat($('input[name="answer"]:checked').val()),
           "corans" : this.stim.corans,
         });
     }
@@ -178,10 +271,10 @@ function init() {
   //specify conditions. Decide between-subject conditions, most important part here
   // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
-  exp.structure=["i0", "consent", "instructions", "critical", 'subj_info', 'thanks'];
+  exp.structure=["i0", "consent", "instructions", "practicetrial", "critical", 'subj_info', 'thanks'];
 
   function makeStim(i) {
-    
+
     var condition = _.sample([" all "," any "]);
     var segment4 = _.sample([" some of them "," only some of them "]);
     //get item
@@ -230,15 +323,18 @@ function init() {
         "corans": sentence.corans,
         "answer1": answer1,
         "answer2": answer2,
-        "sentence": full_sentence
+        "sentence": full_sentence,
+        "complete_sentence": stimuli_sentence
         });
   };
+
   exp.all_stims = [];
   for (var i=0; i<stimuli.length; i++) {
     makeStim(i);
   }
-
-  // console.log(exp.all_stims);
+  exp.all_stims = _.shuffle(exp.all_stims)
+  exp.prac_stims = exp.all_stims.slice(7)
+  // console.log(exp.prac_stims.slice(0).sentence)
 
   // generally no need to change anything below
   exp.trials = [];
