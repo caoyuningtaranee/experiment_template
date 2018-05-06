@@ -181,6 +181,7 @@ function init() {
   exp.structure=["i0", "consent", "instructions", "critical", 'subj_info', 'thanks'];
 
   function makeStim(i) {
+    
     var condition = _.sample([" all "," any "]);
     var segment4 = _.sample([" some of them "," only some of them "]);
     //get item
