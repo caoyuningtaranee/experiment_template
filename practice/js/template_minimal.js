@@ -47,31 +47,18 @@ function make_slides(f) {
     }
   });
 
-    // make sure participants understand
-    // the task before they continue
-      // response = $("#text_response").val();
-      // if (response.length == 0) {
-      //   $(".err").show();
-      // } else {
-      //   exp.data_trials.push({
-      //     "trial_type" : "example",
-      //     "response" : response
-      //   });
-      //   exp.go(); //make sure this is at the *end*, after you log your data
-      // }
       slides.practicetrial = slide({
         name : "practicetrial",
         present : exp.prac_stims,
         start : function() {
          $(".err").hide();
-         $("#comQue").hide();
-         $("#practice2").hide();
+         // $("#prac_comque").hide();
          $('input[name="answer"]').prop('checked',false);
         },
         present_handle : function(stim) {
           console.log(stim);
           $(".err").hide();
-          $("#compreques").hide();
+          $("#prac_compreque").hide();
           $("#advancebutton").hide();
           this.trial_start = Date.now();
           exp.word_counter = 0;
@@ -84,7 +71,7 @@ function make_slides(f) {
             sentencehtml = sentencehtml + '<span id="w'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
           }
           sentencehtml = sentencehtml + "</p>";
-          $("#sentence").html(sentencehtml);
+          $("#prac_sentence").html(sentencehtml);
           console.log("sentencehtml");
           console.log(sentencehtml);
 
@@ -100,15 +87,14 @@ function make_slides(f) {
                 $('input[id=answer1]').attr('checked',false);
                 $('input[id=answer2]').attr('checked',false);
                 // do I need "this." here?
-                $("#comque").html(stim.comque);
-                $("#answer1lab").html(stim.answer1);
-                $("#answer2lab").html(stim.answer2);
-                $("#compreques").show();
+                $("#prac_comque").html(stim.comque);
+                $("#prac_answer1lab").html(stim.answer1);
+                $("#prac_answer2lab").html(stim.answer2);
+                $("#prac_compreque").show();
                 $("#advancebutton").show();
               } else {
                 $(".sprword").hide();
                 $("#advancebutton").show();
-                $("#practice2").hide();
                 $(".err").hide()
               }
             }
@@ -116,7 +102,7 @@ function make_slides(f) {
         },
         button : function() {
           var ok_to_go_on = true;
-          if ($('input[name="answer"]:checked').val() == undefined) {
+          if ($('input[name="answer"]:checked').val() == undefined && this.stim.answer1 != "") {
             ok_to_go_on = false;
             $(".err").show();
           } else {
@@ -144,20 +130,25 @@ function make_slides(f) {
             });
         }
       });
+  slides.transition = slide({
+    name : "transition",
+    button : function() {
+      exp.go(); //use exp.go() if and only if there is no "present" data.
+        }
+      });
 
   slides.critical = slide({
     name : "critical",
     present : exp.all_stims,
     start : function() {
 	   $(".err").hide();
-     $("#comQue").hide();
+     // $("#comque").hide();
      $('input[name="answer"]').prop('checked',false);
-     // $('input[name="answer2"]').prop('checked',false);
     },
     present_handle : function(stim) {
       console.log(stim);
       $(".err").hide();
-      $("#compreques").hide();
+      $("#compreque").hide();
       $("#advancebutton").hide();
     	this.trial_start = Date.now();
       exp.word_counter = 0;
@@ -185,11 +176,10 @@ function make_slides(f) {
             $(".sprword").hide();
             $('input[id=answer1]').attr('checked',false);
             $('input[id=answer2]').attr('checked',false);
-            // do I need "this." here?
             $("#comque").html(stim.comque);
             $("#answer1lab").html(stim.answer1);
             $("#answer2lab").html(stim.answer2);
-            $("#compreques").show();
+            $("#compreque").show();
             $("#advancebutton").show();
           } else {
             $(".sprword").hide();
@@ -201,7 +191,7 @@ function make_slides(f) {
     },
     button : function() {
       var ok_to_go_on = true;
-      if ($('input[name="answer"]:checked').val() == undefined) {
+      if ($('input[name="answer"]:checked').val() == undefined && this.stim.answer1 != "") {
         ok_to_go_on = false;
         $(".err").show();
       } else {
@@ -271,7 +261,7 @@ function init() {
   //specify conditions. Decide between-subject conditions, most important part here
   // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
-  exp.structure=["i0", "consent", "instructions", "practicetrial", "critical", 'subj_info', 'thanks'];
+  exp.structure=["i0", "consent", "instructions", "practicetrial", "transition", "critical", 'subj_info', 'thanks'];
 
   function makeStim(i) {
 
@@ -333,7 +323,7 @@ function init() {
     makeStim(i);
   }
   exp.all_stims = _.shuffle(exp.all_stims)
-  exp.prac_stims = exp.all_stims.slice(7)
+  exp.prac_stims = exp.all_stims.slice(0, 7)
   // console.log(exp.prac_stims.slice(0).sentence)
 
   // generally no need to change anything below

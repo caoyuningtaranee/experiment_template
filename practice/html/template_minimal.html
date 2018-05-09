@@ -101,24 +101,27 @@
 
 
 <div class="slide" id="practicetrial">
-  <div id="sentence">
+  <div id="prac_sentence">
     {{}}
   </div>
 
-  <div id="compreques">
-    <p id="comque">{{}}</p>
-      <input id="answer1" type="radio" name="answer"/><label id='answer1lab'>{{}}</label>
-      <input id="answer2" type="radio" name="answer"/><label id='answer2lab'>{{}}</label>
+  <div id="prac_compreque">
+    <p id="prac_comque">{{}}</p>
+      <input id="answer1" type="radio" name="answer"/><label id='prac_answer1lab'>{{}}</label>
+      <input id="answer2" type="radio" name="answer"/><label id='prac_answer2lab'>{{}}</label>
   </div>
 
   <br>
     <button id="advancebutton" onclick="_s.button()">Continue</button>
     <div class="err">Please select an answer before continuing.</div>
-  </div>
-
-  <p id="practice2">Great! Now let's start.</p>
 
   <!-- <button id="contbutton" onclick="_s.button()">Continue</button> -->
+</div>
+
+<div class="slide" id="transition">
+  <p>Great! Now let's start.</p>
+  <button onclick="_s.button()">Continue</button>
+
 </div>
 
 <div class="slide" id="critical">
@@ -126,7 +129,7 @@
     {{}}
   </div>
 
-  <div id="compreques">
+  <div id="compreque">
     <p id="comque">{{}}</p>
       <input id="answer1" type="radio" name="answer"/><label id="answer1lab">{{}}</label>
       <input id="answer2" type="radio" name="answer"/><label id="answer2lab">{{}}</label>
