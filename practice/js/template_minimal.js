@@ -59,16 +59,21 @@ function make_slides(f) {
           console.log(stim);
           $(".err").hide();
           $("#prac_compreque").hide();
-          $("#advancebutton").hide();
+          $("#padvancebutton").hide();
+          $("#prac_space").show();
           this.trial_start = Date.now();
           exp.word_counter = 0;
           _s.rts = [];
           this.stim = stim;
 
           var sentence = stim.sentence;
+          // console.log(sentence.length);
+          sentence = sentence.filter(function(a) {return a !== ""});
+          // console.log(sentence.length);
           var sentencehtml = "<p>";
           for (i=0;i<sentence.length;i++) {
-            sentencehtml = sentencehtml + '<span id="w'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
+            // console.log(i);
+            sentencehtml = sentencehtml + '<span id="pw'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
           }
           sentencehtml = sentencehtml + "</p>";
           $("#prac_sentence").html(sentencehtml);
@@ -79,9 +84,9 @@ function make_slides(f) {
             if(e.keyCode == 32){
               _s.rts.push(Date.now()-exp.word_start);
               exp.word_counter++;
-              if (exp.word_counter <= stim.sentence.length) {
-                advanceWord("w"+exp.word_counter);
-                // Do I need "this." here?
+              if (exp.word_counter <= sentence.length) {
+                $("#prac_space").hide();
+                advanceWord("pw"+exp.word_counter);
               } else if (stim.comque != ""){
                 $(".sprword").hide();
                 $('input[id=answer1]').attr('checked',false);
@@ -91,10 +96,10 @@ function make_slides(f) {
                 $("#prac_answer1lab").html(stim.answer1);
                 $("#prac_answer2lab").html(stim.answer2);
                 $("#prac_compreque").show();
-                $("#advancebutton").show();
+                $("#padvancebutton").show();
               } else {
                 $(".sprword").hide();
-                $("#advancebutton").show();
+                $("#padvancebutton").show();
                 $(".err").hide()
               }
             }
@@ -148,6 +153,7 @@ function make_slides(f) {
     present_handle : function(stim) {
       console.log(stim);
       $(".err").hide();
+      $("#space").show();
       $("#compreque").hide();
       $("#advancebutton").hide();
     	this.trial_start = Date.now();
@@ -156,6 +162,8 @@ function make_slides(f) {
       this.stim = stim;
 
       var sentence = stim.sentence;
+      sentence = sentence.filter(function(a) {return a !== ""});
+      console.log(sentence);
       var sentencehtml = "<p>";
       for (i=0;i<sentence.length;i++) {
         sentencehtml = sentencehtml + '<span id="w'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
@@ -169,9 +177,9 @@ function make_slides(f) {
         if(e.keyCode == 32){
           _s.rts.push(Date.now()-exp.word_start);
           exp.word_counter++;
-          if (exp.word_counter <= stim.sentence.length) {
+          if (exp.word_counter <= sentence.length) {
+            $("#space").hide();
             advanceWord("w"+exp.word_counter);
-            // Do I need "this." here?
           } else if (stim.comque != ""){
             $(".sprword").hide();
             $('input[id=answer1]').attr('checked',false);
@@ -262,6 +270,7 @@ function init() {
   // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
   exp.structure=["i0", "consent", "instructions", "practicetrial", "transition", "critical", 'subj_info', 'thanks'];
+  // exp.structure=["i0", "consent", "instructions","transition", "critical", 'subj_info', 'thanks'];
 
   function makeStim(i) {
 
