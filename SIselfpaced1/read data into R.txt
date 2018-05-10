@@ -1,0 +1,313 @@
+rm(list=ls())
+
+# Navigate to folder
+setwd("E:\\Elements_HD\\SIprocessingcost\\SIselfpaced1\\RESPONSEDATA")
+
+# Loop through all subjects
+for( file in dir() ){
+	# Get subject ID
+	Subject <- substr( file, 1, 7 )
+
+	# Read this subject's data
+	thissubj <- read.delim(file=file, skip=5, header=F, sep="\t" )
+
+	# Name the columns (just for ease of referencing)
+	colnames(thissubj) <- c("Trial", "EventType", "Code", "Item", "Boundedness", "Quantifier", "RegionNum", "RegionDisplayed", "OrderInExp", "Time", "TTime")
+
+	# A row of all the RTs (from the TTime) column, shifted up by one (because the RT for a given stimulus is in the row after that stimulus) and divided by 10 to get ms
+	RT <- c(thissubj$TTime[2:length(thissubj$TTime)], 0) / 10
+	
+	# Add the row of RTs to the data
+	thissubj <- data.frame(thissubj, RT)
+
+	# Add the subject identifier
+	thissubj <- data.frame(thissubj, Subject)
+
+	# Extract just the reaction time data
+	thissubj_RTdata <- thissubj[ thissubj$EventType=="Picture" & substr(thissubj$Code, 1, 5) != "compq", c("Item", "Boundedness", "Quantifier", "RegionNum", "RegionDisplayed", "OrderInExp", "RT", "Subject")]
+
+	# Either add this subject's RT datat to the existing RT data frame, or create an RT data frame
+	if( "RTdata" %in% ls() ){
+		RTdata <- rbind( RTdata, thissubj_RTdata)
+	} else {
+		RTdata <- thissubj_RTdata
+	}
+
+	# A row of all the codes, shifted up by two (because the compQ for a given stimulus is two rows after the last row of that stimulus)
+	CompQ <- c( as.character( thissubj$Code[3:(nrow(thissubj))] ), "0", "0" )
+	
+	# A row of all the response codes, shifted up by three (because the response code for a given stimulus is three rows after the last row of that stimulus)
+	Response <- c( as.character( thissubj$Code[4:(nrow(thissubj))] ), "0", "0", "0" )
+
+	# Add the compq and response information to the data frame
+	thissubj <- data.frame( thissubj, CompQ)
+	thissubj <- data.frame( thissubj, Response)
+
+	# Extract just the accuracy data
+	thissubj_Respdata <- thissubj[ substr(thissubj$CompQ, 1, 5) == "compq", c("Item", "Boundedness", "Quantifier", "RegionNum", "RegionDisplayed", "OrderInExp", "RT", "CompQ", "Response", "Subject") ]
+	
+	# Either add this subject's RT datat to the existing RT data frame, or create an RT data frame
+	if( "Respdata" %in% ls() ){
+		Respdata <- rbind( Respdata, thissubj_Respdata)
+	} else {
+		Respdata <- thissubj_Respdata
+	}
+
+
+}
+
+# Clean up Respdata
+Respdata$Item <- factor(Respdata$Item)
+Respdata$Boundedness <- factor(Respdata$Boundedness)
+Respdata$Quantifier <- factor(Respdata$Quantifier)
+Respdata$Subject <- factor(Respdata$Subject)
+Respdata$CompQ <- factor(Respdata$CompQ)
+Respdata$Response <- ifelse( Respdata$Response=="2", "left", ifelse(Respdata$Response=="3", "right", "space") )
+Respdata$Response <- factor(Respdata$Response)
+Respdata$Accuracy <- ifelse( substr(Respdata$Response, 1, 1) == substr(Respdata$CompQ, 7, 7), "correct", "incorrect" )
+Respdata$Accuracy <- factor(Respdata$Accuracy, levels=c("incorrect", "correct") )
+#Respdata$Item_numeric <- as.numeric( as.character( Respdata$Item ) )
+
+# Clean up RTdata
+RTdata$Item <- factor(RTdata$Item)
+RTdata$Boundedness <- factor(RTdata$Boundedness)
+RTdata$Quantifier <- factor(RTdata$Quantifier)
+RTdata$Subject <- factor(RTdata$Subject)
+#RTdata$Item_numeric <- as.numeric( as.character( RTdata$Item ) )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Just for playing with the data
+
+# Pull out critical data RT only
+critRT <- RTdata[ RTdata$Boundedness != "filler" & RTdata$RegionNum > 2, ]
+critRT$Item <- factor(critRT$Item)
+critRT$Boundedness <- factor(critRT$Boundedness)
+critRT$Quantifier <- factor(critRT$Quantifier)
+critRT$RegionNum <- factor(critRT$RegionNum)
+
+### Calculate the interval between "some of" and "the rest" for each item
+# the data for just the regions "some of them", "were", "he added", and "that"
+regionsbetween <- critRT[ critRT$RegionNum %in% 4:7, ]
+
+# the sums of those regions for each (item,subject) combination
+intervals <- aggregate( regionsbetween$RT, list(regionsbetween$Subject, regionsbetween$Item, regionsbetween$Quantifier, regionsbetween$Boundedness), sum )
+
+# put that data into the critRT data frame
+rownames(intervals) <- paste(intervals[,1], intervals[,2], sep="_")
+critRT$Interval <- intervals[ paste(critRT$Subject, critRT$Item, sep="_"),"x"]
+
+critRT$RegionDisplayed <- factor(critRT$RegionDisplayed)
+
+
+# Pull out 'the rest' and its later regions
+therest_plus0 <- critRT[ critRT$RegionNum == 8, ]
+therest_plus1 <- critRT[ critRT$RegionNum == 9, ]
+therest_plus2 <- critRT[ critRT$RegionNum == 10, ]
+therest_plus3 <- critRT[ critRT$RegionNum == 11, ]
+
+# Pull out quantifier and its later regions
+quant_plus0 <- critRT[ critRT$RegionNum == 4, ]
+quant_plus1 <- critRT[ critRT$RegionNum == 5, ]
+quant_plus2 <- critRT[ critRT$RegionNum == 6, ]
+quant_plus3 <- critRT[ critRT$RegionNum == 7, ]
+
+
+
+
+
+### trimming outliers based on standard deviation
+#criterion <- 2
+#means <- tapply( log(critRT$RT), list(critRT$Subject), mean, na.rm=T )
+#sds <- tapply( log(critRT$RT), list(critRT$Subject), sd, na.rm=T )
+#trim <- critRT[ (log(critRT$RT) < (means[critRT$Subj] + criterion*sds[critRT$Subj])) & (log(critRT$RT) > (means[critRT$Subj] - criterion*sds[critRT$Subj])), ]
+
+
+
+
+### BKW-style trimming
+##regionmeans <- tapply( critRT$RT, list(critRT$RegionNum), mean )
+#cutoffs <- regionmeans * 3
+#trim1 <- critRT [critRT$RT < cutoffs[as.character(critRT$RegionNum)] & critRT$RT > 150,]
+#
+#library(reshape2)
+#criterion <- 2
+#means <- melt( tapply( log(trim1$RT), list(trim1$Subject, trim1$RegionNum), mean, na.rm=T ) )
+#colnames(means) <- c("Subject", "RegionNum", "Mean")
+#rownames(means) <- paste(means$Subject,"_",means$RegionNum,sep="")
+#sds <- melt( tapply( log(trim1$RT), list(trim1$Subject, trim1$RegionNum), sd, na.rm=T ) )
+#colnames(sds) <- c("Subject", "RegionNum", "SD")
+#rownames(sds) <- paste(means$Subject,"_",means$RegionNum,sep="")
+
+#cutoffs <- data.frame( cbind( means$Mean + 3*sds$SD, means$Mean - 3*sds$SD ) )
+#colnames(cutoffs) <- c("hi", "lo")
+#rownames(cutoffs) <- rownames(means)
+
+#rowlist <- paste(trim1$Subject,"_",trim1$RegionNum,sep="")
+#trim2 <- trim1[ (log(trim1$RT) < cutoffs[rowlist,"hi"]) & (log(trim1$RT) > cutoffs[rowlist,"lo"]), ]
+
+
+
+
+# cd up one level
+#setwd("..")
+
+# Save the data
+#save( RTdata, Respdata, file=paste("data_n", length(levels(factor(RTdata$Subject))), ".RData", sep="") )
+
+
+
+
+
+critRT <- critRT[!( critRT$Subject == "subj001" & (log(critRT$RT) > 7 | log(critRT$RT) < 5.01) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj002" & log(critRT$RT) > 7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj003" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.29) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj004" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.2) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj005" & log(critRT$RT) > 7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj006" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.59) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj007" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.3) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj008" & log(critRT$RT) > 8 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj009" & log(critRT$RT) > 7.5 ), ] 
+# subj010
+critRT <- critRT[!( critRT$Subject == "subj011" & log(critRT$RT) > 6.7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj012" & (log(critRT$RT) > 7.4 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj013" & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj014" & log(critRT$RT) > 7.1 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj015" & log(critRT$RT) > 8 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj016" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.2) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj017" & (log(critRT$RT) > 6.5 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj018" & log(critRT$RT) > 7 ), ] 	# maybe try a lower cutoff, she's still skewed
+critRT <- critRT[!( critRT$Subject == "subj019" & log(critRT$RT) > 7.2 ), ]
+critRT <- critRT[!( critRT$Subject == "subj019" & log(critRT$RT) > 6.6 ), ]
+critRT <- critRT[!( critRT$Subject == "subj020" & log(critRT$RT) > 6.4 ), ]
+critRT <- critRT[!( critRT$Subject == "subj021" & (log(critRT$RT) > 7 | log(critRT$RT) < 5.3) ), ]  	# maybe try a lower cutoff, she's still skewed
+critRT <- critRT[!( critRT$Subject == "subj022" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.3) ), ]
+critRT <- critRT[!( critRT$Subject == "subj023" & (log(critRT$RT) > 7.3 | log(critRT$RT) < 5.2) ), ]
+critRT <- critRT[!( critRT$Subject == "subj024" & (log(critRT$RT) > 7 | log(critRT$RT) < 4.7) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj025" & (log(critRT$RT) > 7.1 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj026" & log(critRT$RT) > 6.6 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj027" & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj028" & (log(critRT$RT) > 6.8 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj029" & log(critRT$RT) > 7 ), ] 
+
+
+
+
+critRT <- critRT[!( critRT$Item == 1 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 2 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 3 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 4 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 5 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5.1) ), ]  
+critRT <- critRT[!( critRT$Item == 6 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 7 & (log(critRT$RT) > 7.1 | log(critRT$RT) < 5.1) ), ]   
+critRT <- critRT[!( critRT$Item == 8 & log(critRT$RT) > 6.75 ), ] 
+critRT <- critRT[!( critRT$Item == 9 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 10 & log(critRT$RT) < 5 ), ]
+critRT <- critRT[!( critRT$Item == 11 & log(critRT$RT) < 5 ), ]
+critRT <- critRT[!( critRT$Item == 12 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 13 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+#item 14
+critRT <- critRT[!( critRT$Item == 15 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 16 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 17 & (log(critRT$RT) > 7.3 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Item == 18 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Item == 19 & log(critRT$RT) > 7.25 ), ]
+critRT <- critRT[!( critRT$Item == 20 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 21 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+#item 22
+critRT <- critRT[!( critRT$Item == 23 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 24 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 25 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 26 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 27 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 28 & (log(critRT$RT) > 7 | log(critRT$RT) < 4.9) ), ]
+critRT <- critRT[!( critRT$Item == 29 & log(critRT$RT) > 8 ), ]
+critRT <- critRT[!( critRT$Item == 30 & (log(critRT$RT) > 8 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 31 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 32 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 33 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 34 & log(critRT$RT) > 7.1 ), ]
+critRT <- critRT[!( critRT$Item == 35 & (log(critRT$RT) > 6.7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 36 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 37 & (log(critRT$RT) > 5.05 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 38 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 39 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 40 & log(critRT$RT) > 6.9 ), ]
+critRT <- critRT[!( critRT$Item == 41 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.2) ), ]
+critRT <- critRT[!( critRT$Item == 42 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 43 & log(critRT$RT) > 6.53 ), ]
+critRT <- critRT[!( critRT$Item == 44 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 45 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 46 & (log(critRT$RT) > 6.9 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 47 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 48 & log(critRT$RT) > 7 ), ]
+
+
+#critRT <- critRT[!(critRT$RT<200), ]
+
+
+
+# get residual reading times
+critRT$Length <- nchar( as.character( critRT$RegionDisplayed ) )
+critRT$Words <- unlist( lapply( critRT$RegionDisplayed, function(x)( length( unlist( strsplit( as.character(x), " " ) ) ) ) ) )
+rrt <- lmList( log(RT) ~ Length + Words | Subject, critRT )
+critRT$RRT <- critRT$RT - exp( coef(rrt)[critRT$Subject,"(Intercept)"] + coef(rrt)[critRT$Subject,"Length"]*critRT$Length + coef(rrt)[critRT$Subject,"Words"]*critRT$Words )
+
+
+m0 <- lmer( RRT ~ RegionNum/(Quantifier/Boundedness) + (1|Subject) + (1|Item) + (1|RegionDisplayed), critRT, verbose=10 )
+m1 <- lmer( RRT ~ (RegionNum+Quantifier+Boundedness)^2 + (1|Subject) + (1|Item) + (1|RegionDisplayed), critRT, verbose=10 )
+
+
+m0_maxranef <- lmer( RRT ~ RegionNum/(Quantifier/Boundedness) + (RegionNum/(Quantifier/Boundedness)|Subject) + (RegionNum/(Quantifier/Boundedness)|Item), rta, verbose=10 )
+m1_maxranef <- lmer( RRT ~ (RegionNum+Quantifier+Boundedness)^2 + (RegionNum/(Quantifier/Boundedness)|Subject) + (RegionNum/(Quantifier/Boundedness)|Item), rta, verbose=10 )
+
+
+
+
+
+#### BARPLOTTING
+
+datatoplot <- therest_plus0
+
+means <- tapply( log(datatoplot$RT), list(datatoplot$Boundedness, datatoplot$Quantifier), mean)
+sds <- tapply( log(datatoplot$RT), list(datatoplot$Boundedness, datatoplot$Quantifier), sd)
+stderrs <- sds / sqrt(length(levels(factor(critRT$Subject)))-1)
+
+
+xvals <- barplot(means, beside=T, legend.text=c("upper", "lower"), xpd=F, ylim=c(min(means) - .01*min(means), max(means) + .01*max(means)), args.legend=list(x="top"))
+
+arrows(xvals, means, xvals, means+.5*(stderrs), angle=90, length=.05)
+arrows(xvals, means, xvals, means-.5*(stderrs), angle=90, length=.05)
+
+
+
+
+m0 <- lmer( log(RT) ~ RegionNum/(Quantifier/Boundedness) + (1|Subject) + (1|RegionDisplayed) + (1|Item), critRT, control=lmerControl(optimizer="bobyqa"), verbose=2 )
+m1 <- lmer( log(RT) ~ (RegionNum+Quantifier+Boundedness)^2 + (1|Subject) + (1|RegionDisplayed) + (1|Item), critRT, control=lmerControl(optimizer="bobyqa"), verbose=2 )
+
+
+m0_maxranef <- lmer( log(RT) ~ RegionNum/(Quantifier/Boundedness) + (RegionNum/(Quantifier/Boundedness)|Subject) + (Boundedness|RegionDisplayed) + (RegionNum/(Quantifier/Boundedness)|Item), critRT, control=lmerControl(optimizer="bobyqa"), verbose=2 )
+m1_maxranef <- lmer( log(RT) ~ (RegionNum+Quantifier+Boundedness)^2 + (RegionNum/(Quantifier/Boundedness)|Subject) + (Boundedness|RegionDisplayed) + (RegionNum/(Quantifier/Boundedness)|Item), critRT, control=lmerControl(optimizer="bobyqa"), verbose=2 )
+
+

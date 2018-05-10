@@ -1,0 +1,41 @@
+
+critRT <- critRT[!( critRT$Subject == "subj001" & (log(critRT$RT) > 7 | log(critRT$RT) < 5.01) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj002" & log(critRT$RT) > 7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj003" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.29) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj004" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.2) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj005" & log(critRT$RT) > 7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj006" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.59) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj007" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.3) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj008" & log(critRT$RT) > 8 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj009" & log(critRT$RT) > 7.5 ), ] 
+# subj010
+critRT <- critRT[!( critRT$Subject == "subj011" & log(critRT$RT) > 6.7 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj012" & (log(critRT$RT) > 7.4 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj013" & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj014" & log(critRT$RT) > 7.1 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj015" & log(critRT$RT) > 8 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj016" & (log(critRT$RT) > 6.6 | log(critRT$RT) < 5.2) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj017" & (log(critRT$RT) > 6.5 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj018" & log(critRT$RT) > 7 ), ] 	# maybe try a lower cutoff, she's still skewed
+critRT <- critRT[!( critRT$Subject == "subj019" & log(critRT$RT) > 7.2 ), ]
+critRT <- critRT[!( critRT$Subject == "subj019" & log(critRT$RT) > 6.6 ), ]
+critRT <- critRT[!( critRT$Subject == "subj020" & log(critRT$RT) > 6.4 ), ]
+critRT <- critRT[!( critRT$Subject == "subj021" & (log(critRT$RT) > 7 | log(critRT$RT) < 5.3) ), ]  	# maybe try a lower cutoff, she's still skewed
+critRT <- critRT[!( critRT$Subject == "subj022" & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.3) ), ]
+critRT <- critRT[!( critRT$Subject == "subj023" & (log(critRT$RT) > 7.3 | log(critRT$RT) < 5.2) ), ]
+critRT <- critRT[!( critRT$Subject == "subj024" & (log(critRT$RT) > 7 | log(critRT$RT) < 4.7) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj025" & (log(critRT$RT) > 7.1 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Subject == "subj026" & log(critRT$RT) > 6.6 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj027" & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Subject == "subj028" & (log(critRT$RT) > 6.8 | log(critRT$RT) < 5.1) ), ] 
+
+par(mfrow=c(1,1))
+library(MASS)
+
+subjtotest <- "subj028"
+
+plot(sort(log(critRT[critRT$Subject == subjtotest,]$RT)))
+sort(log(critRT[critRT$Subject == subjtotest,]$RT))
+
+
+truehist(log(critRT[critRT$Subject == subjtotest,]$RT), nbin=10, prob=F)

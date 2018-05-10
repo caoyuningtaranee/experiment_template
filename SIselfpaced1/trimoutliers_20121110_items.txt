@@ -1,0 +1,59 @@
+
+critRT <- critRT[!( critRT$Item == 1 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 2 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 3 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 4 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 5 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5.1) ), ]  
+critRT <- critRT[!( critRT$Item == 6 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 7 & (log(critRT$RT) > 7.1 | log(critRT$RT) < 5.1) ), ]   
+critRT <- critRT[!( critRT$Item == 8 & log(critRT$RT) > 6.75 ), ] 
+critRT <- critRT[!( critRT$Item == 9 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 10 & log(critRT$RT) < 5 ), ]
+critRT <- critRT[!( critRT$Item == 11 & log(critRT$RT) < 5 ), ]
+critRT <- critRT[!( critRT$Item == 12 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 13 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+#item 14
+critRT <- critRT[!( critRT$Item == 15 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 16 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 17 & (log(critRT$RT) > 7.3 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Item == 18 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ] 
+critRT <- critRT[!( critRT$Item == 19 & log(critRT$RT) > 7.25 ), ]
+critRT <- critRT[!( critRT$Item == 20 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 21 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+#item 22
+critRT <- critRT[!( critRT$Item == 23 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 24 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ] 
+critRT <- critRT[!( critRT$Item == 25 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 26 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 27 & log(critRT$RT) > 7.5 ), ] 
+critRT <- critRT[!( critRT$Item == 28 & (log(critRT$RT) > 7 | log(critRT$RT) < 4.9) ), ]
+critRT <- critRT[!( critRT$Item == 29 & log(critRT$RT) > 8 ), ]
+critRT <- critRT[!( critRT$Item == 30 & (log(critRT$RT) > 8 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 31 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 32 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 33 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 34 & log(critRT$RT) > 7.1 ), ]
+critRT <- critRT[!( critRT$Item == 35 & (log(critRT$RT) > 6.7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 36 & (log(critRT$RT) > 6.75 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 37 & (log(critRT$RT) > 5.05 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 38 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 39 & log(critRT$RT) > 7.5 ), ]
+critRT <- critRT[!( critRT$Item == 40 & log(critRT$RT) > 6.9 ), ]
+critRT <- critRT[!( critRT$Item == 41 & (log(critRT$RT) > 7.5 | log(critRT$RT) < 5.2) ), ]
+critRT <- critRT[!( critRT$Item == 42 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 43 & log(critRT$RT) > 6.53 ), ]
+critRT <- critRT[!( critRT$Item == 44 & (log(critRT$RT) > 7 | log(critRT$RT) < 5) ), ]
+critRT <- critRT[!( critRT$Item == 45 & (log(critRT$RT) > 7 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 46 & (log(critRT$RT) > 6.9 | log(critRT$RT) < 5.1) ), ]
+critRT <- critRT[!( critRT$Item == 47 & log(critRT$RT) > 7 ), ]
+critRT <- critRT[!( critRT$Item == 48 & log(critRT$RT) > 7 ), ]
+
+par(mfrow=c(1,1))
+library(MASS)
+
+itemtotest <- 2
+plot(sort(log(critRT[critRT$Item == itemtotest,]$RT)))
+sort(log(critRT[critRT$Item == itemtotest,]$RT))
+
+
+truehist(log(critRT[critRT$Subject == subjtotest,]$RT), nbin=10, prob=F)
