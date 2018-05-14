@@ -67,12 +67,9 @@ function make_slides(f) {
           this.stim = stim;
 
           var sentence = stim.sentence;
-          // console.log(sentence.length);
           sentence = sentence.filter(function(a) {return a !== ""});
-          // console.log(sentence.length);
           var sentencehtml = "<p>";
           for (i=0;i<sentence.length;i++) {
-            // console.log(i);
             sentencehtml = sentencehtml + '<span id="pw'+(i+1)+'" class="sprword">'+sentence[i]+'</span>';
           }
           sentencehtml = sentencehtml + "</p>";
@@ -144,7 +141,7 @@ function make_slides(f) {
 
   slides.critical = slide({
     name : "critical",
-    present : exp.all_stims,
+    present : exp.trial_stims,
     start : function() {
 	   $(".err").hide();
      // $("#comque").hide();
@@ -331,8 +328,10 @@ function init() {
   for (var i=0; i<stimuli.length; i++) {
     makeStim(i);
   }
-  exp.all_stims = _.shuffle(exp.all_stims)
-  exp.prac_stims = exp.all_stims.slice(0, 7)
+  exp.trial_stims = exp.all_stims.filter(function(a){return a.type != "practice"})
+  exp.trial_stims = _.shuffle(exp.trial_stims)
+  exp.prac_stims = exp.all_stims.filter(function(a){ return a.type == "practice"; })
+  exp.prac_stims = _.shuffle(exp.prac_stims)
   // console.log(exp.prac_stims.slice(0).sentence)
 
   // generally no need to change anything below
