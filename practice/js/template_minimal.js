@@ -275,7 +275,7 @@ function init() {
     var sentence = stimuli[i];
 
     //segment 4
-    if (sentence.type == "practice") {
+    if (sentence.type != "critical") {
       var segment4 = sentence.segment4;
     } else {
       var segment4 = _.sample([" some of them "," only some of them "]);
