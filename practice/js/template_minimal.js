@@ -272,15 +272,21 @@ function init() {
   function makeStim(i) {
 
     var condition = _.sample([" all "," any "]);
-    var segment4 = _.sample([" some of them "," only some of them "]);
-    //get item
     var sentence = stimuli[i];
-    // var segment1 = sentence.segment1;
+
+    //segment 4
+    if (sentence.type == "practice") {
+      var segment4 = sentence.segment4;
+    } else {
+      var segment4 = _.sample([" some of them "," only some of them "]);
+    }
+    //segment2
     if (sentence.type == "critical") {
       var segment2 = sentence.segment2a + condition + sentence.segment2b;
     } else {
       var segment2 = sentence.segment2;
     }
+    //comprehension
     var comque = sentence.comque
     var answer1 = _.sample([sentence.corans, sentence.incorans])
     if (answer1 == sentence.corans) {
