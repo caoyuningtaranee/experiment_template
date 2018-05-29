@@ -263,6 +263,15 @@ function make_slides(f) {
 
 /// init ///
 function init() {
+  repeatWorker = false;
+  (function(){
+    var ut_id = "taranee-politzer2013";
+    if (UTWorkerLimitReached(ut_id)) {
+      $('.slide').empty();
+      repeatWorker = true;
+      alert("You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.");
+    }
+  })();
   //specify conditions. Decide between-subject conditions, most important part here
   // exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
   //blocks of the experiment:
