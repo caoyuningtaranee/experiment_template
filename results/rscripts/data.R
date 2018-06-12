@@ -115,4 +115,3 @@ rawdata[,(ncol(rawdata)-9):ncol(rawdata)] = log(rawdata[,(ncol(rawdata)-9):ncol(
 sum(colSums(!is.na(rawdata))[(ncol(rawdata)-9):ncol(rawdata)])
 # Write file
 write.csv(rawdata, file = 'after_step_6.csv')
-
