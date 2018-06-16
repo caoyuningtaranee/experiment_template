@@ -280,7 +280,7 @@ function init() {
 
   function makeStim(i) {
 
-    var condition = _.sample([" all "," any "]);
+    var condition = _.sample([" all of them "," any of them "]);
     var sentence = stimuli[i];
 
     //segment 4

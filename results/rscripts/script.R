@@ -29,16 +29,16 @@ newdata$Quantifier <- factor(newdata$Quantifier,
                         levels = c(newdata$Quantifier[1], newdata$Quantifier[3]),
                         labels = c('only', 'some'))
 
-# Models
+# 1. Models
 n <- lmer(RT ~ RegionNum*Quantifier*Boundedness + (1|Subject) + (1|complete_sentence), newdata)
 summary(n)
-sjt.lmer(n, show.se = TRUE, string.p = "t value")
 
-o <- lmer(RT ~ RegionNum/(Quantifier/Boundedness) + (1|Subject) + (1|complete_sentence), newdata)
-summary(o)
-sjt.lmer(o, show.se = TRUE, string.p = "t value")
-# Select a sentence and making Figure 1
-# Make the overall picture
+# o <- lmer(RT ~ RegionNum/(Quantifier/Boundedness) + (1|Subject) + (1|complete_sentence), newdata)
+# summary(o)
+
+# 2. Making Figure 1
+# 2.1 Make the overall picture
+# some
 df = newdata[newdata$Quantifier==newdata$Quantifier[3],]
 df$bound <- factor(df$bound,
                    levels = c('Upper bound', 'Lower bound'),
@@ -49,6 +49,18 @@ ggline(df, x = "RegionNum", y = "RT", color = "bound",
 dev.copy(png,"../results/graphs/overall.png")
 dev.off()
 
+# only some
+df = newdata[newdata$Quantifier==newdata$Quantifier[1],]
+df$bound <- factor(df$bound,
+                   levels = c('Upper bound', 'Lower bound'),
+                   labels = c('Upper bound only some', 'Lower bound only some'))
+ggline(df, x = "RegionNum", y = "RT", color = "bound", 
+       add = c("mean_se"), palette = c("steelblue1", "orchid1"),
+       ylab = "Reading time (log)", xlab = "Region")
+dev.copy(png,"../results/graphs/overall_only.png")
+dev.off()
+
+# 2.2 Make picture for one sentence
 # get all sentences that start with the same noun
 sentence = split(rawdata$complete_sentence, gsub("^(\\w+).*", "\\1", rawdata$complete_sentence))
 # Select one single sentence and divide by Quantifier
@@ -97,7 +109,7 @@ ggline(some, x = "segment", y = "RT", color = "bound",
 dev.copy(png,"../results/graphs/Figure1a_some.png")
 dev.off()
 
-# Select another sentence and divide by Quantifier
+# 2.3 Make the picture for another sentence
 example = grepl("^(\"David).*", rawdata$complete_sentence)
 instance = rawdata[which(example == TRUE), ]
 instance = instance[, 1:(ncol(instance)-1)]
@@ -142,7 +154,9 @@ ggline(some, x = "segment", y = "RT", color = "bound",
        ylab = "Reading time (log)", xlab = "Region")
 dev.copy(png,"../results/graphs/Figure1b_some.png")
 dev.off()
-# Making Figure 2
+
+# 3. Making Figure 2 -- lag time
+# some (data)
 some = split(rawdata, rawdata$Quantifier)[rawdata$Quantifier[3]]
 some = as.data.frame(some)
 colnames(some) = colnames(rawdata)
@@ -151,41 +165,19 @@ some$bound <- factor(some$bound,
                      levels = c(some$bound[1], some$bound[2]),
                      labels = c('Upper bound', 'Lower bound'))
 some$lagtime = log(exp(some$seg5)+exp(some$seg6)+exp(some$seg7)+exp(some$seg8))
-
+some$RT = log(exp(some$seg8)+exp(some$seg9))
+# some (mean)
+some$rawlag = exp(some$seg5)+exp(some$seg6)+exp(some$seg7)+exp(some$seg8)
+average = mean(some$rawlag, na.rm = TRUE)
+average
+# some (plot)
 ggplot(some, aes(x=lagtime, y=seg4, color=Boundedness)) +
   geom_point() +
   geom_smooth(method="lm")
 dev.copy(png,"../results/graphs/Figure2some.png")
 dev.off()
 
-onlysome = split(rawdata, rawdata$Quantifier)[rawdata$Quantifier[1]]
-onlysome = as.data.frame(onlysome)
-colnames(onlysome) = colnames(rawdata)
-onlysome$lagtime = log(exp(onlysome$seg5)+exp(onlysome$seg6)+exp(onlysome$seg7)+exp(onlysome$seg8))
-onlysome$bound <- as.character(onlysome$Boundedness)
-onlysome$bound <- factor(onlysome$bound,
-                     levels = c(onlysome$bound[3], onlysome$bound[1]),
-                     labels = c('Upper bound', 'Lower bound'))
-ggplot(onlysome, aes(x=lagtime, y=seg4, color=Boundedness)) +
-  geom_point() +
-  geom_smooth(method="lm")
-dev.copy(png,"../results/graphs/Figure2only.png")
-dev.off()
-
-# Chi-square/T-test for lag time from model comparison?
-some$rawlag = exp(some$seg5)+exp(some$seg6)+exp(some$seg7)+exp(some$seg8)
-average = mean(some$rawlag, na.rm = TRUE)
-average
-
-newsome = some[,c("workerid", "bound", "rawlag", "seg8", "seg9")]
-mod1 = lmer(-1 + newsome$seg8 ~ rawlag+bound + (1|workerid), newsome)
-mod2 = lmer(-1 + newsome$seg8 ~ rawlag:bound + (1|workerid), newsome)
-anova(mod1, mod2)
-
-t.test(some$lagtime, onlysome$lagtime)
-
-# T-test
-t = t.test(rawdata$seg8[rawdata$Quantifier==rawdata$Quantifier[1]]~rawdata$Boundedness[rawdata$Quantifier==rawdata$Quantifier[1]])
-t # reading time on "the rest" (seg8) for "some" condition by Boundedness
-o = t.test(rawdata$seg8[rawdata$Quantifier==rawdata$Quantifier[3]]~rawdata$Boundedness[rawdata$Quantifier==rawdata$Quantifier[3]])
-o # reading time on "the rest" (seg8) for "only some" condition by Boundedness
+# LMER for lagtime ("some" only)
+some$RT = log(exp(some$seg8)+exp(some$seg9))
+q = lmer(some$RT ~ lagtime * bound + (1|workerid) + (1|complete_sentence), some)
+summary(q)
